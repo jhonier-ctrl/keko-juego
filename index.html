@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kekocity Login</title>
+  <style>
+    body {
+      background-color: #1b1f2b;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .oculto {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Kekocity Moderador v2</h1>
+
+  <!-- Registro -->
+  <div id="registro">
+    <h2>Registro</h2>
+    <input type="text" id="registro-nombre" placeholder="Nombre de usuario" />
+    <input type="password" id="registro-contraseña" placeholder="Contraseña" />
+    <button onclick="registrarUsuario()">Registrarse</button>
+  </div>
+
+  <!-- Login -->
+  <div id="login">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="login-nombre" placeholder="Nombre de usuario" />
+    <input type="password" id="login-contraseña" placeholder="Contraseña" />
+    <button onclick="iniciarSesion()">Entrar</button>
+  </div>
+
+  <script>
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    function registrarUsuario() {
+      const nombre = document.getElementById("registro-nombre").value.trim();
+      const contraseña = document.getElementById("registro-contraseña").value.trim();
+
+      if (!nombre || !contraseña) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      if (usuarios.find(u => u.nombre === nombre)) {
+        alert("Este nombre ya está registrado.");
+        return;
+      }
+
+      const rango = usuarios.length === 0 ? "staff" : "usuario";
+      usuarios.push({ nombre, contraseña, rango });
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      alert(`Registrado correctamente. Tu rango es: ${rango}`);
+    }
+
+    function iniciarSesion() {
+      const nombre = document.getElementById("login-nombre").value.trim();
+      const contraseña = document.getElementById("login-contraseña").value.trim();
+
+      const user = usuarios.find(u => u.nombre === nombre && u.contraseña === contraseña);
+      if (!user) {
+        alert("Usuario o contraseña incorrectos.");
+        return;
+      }
+
+      // Guardamos el usuario actual para sesión
+      localStorage.setItem("usuarioActual", JSON.stringify(user));
+
+      // Redirigir a mundo.html
+      window.location.href = "mundo.html";
+    }
+  </script>
+</body>
+</html>

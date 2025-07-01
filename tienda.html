@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tienda de Furnis - Kekocity</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #0a1a2f;
+    color: white;
+    padding: 20px;
+  }
+  .furni-tienda {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    background-color: #ffcc00;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    padding-top: 10px;
+  }
+  .furni-tienda:hover {
+    background-color: #e6b800;
+  }
+  button {
+    margin-top: 5px;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #50b9ff;
+    color: white;
+  }
+  button:hover {
+    background-color: #379fd9;
+  }
+  #mensajeCompra {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tienda de Furnis</h1>
+
+<div id="listaFurnis"></div>
+
+<div id="mensajeCompra"></div>
+
+<button id="volverBtn">Volver al Mundo</button>
+
+<script>
+  const furnisDisponibles = [
+    { id: "furni1", nombre: "Silla Amarilla", precio: 100 },
+    { id: "furni2", nombre: "Mesa Azul", precio: 150 },
+    { id: "furni3", nombre: "Lámpara Roja", precio: 120 }
+  ];
+
+  const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+  if (!usuarioActual) {
+    window.location.href = "login.html";
+  }
+
+  const listaFurnisDiv = document.getElementById("listaFurnis");
+  const mensajeCompra = document.getElementById("mensajeCompra");
+  const volverBtn = document.getElementById("volverBtn");
+
+  function cargarTienda() {
+    listaFurnisDiv.innerHTML = "";
+    furnisDisponibles.forEach(f => {
+      const div = document.createElement("div");
+      div.classList.add("furni-tienda");
+      div.innerHTML = `
+        <div style="font-weight: bold;">${f.nombre}</div>
+        <div>Precio: ${f.precio} kekos</div>
+        <button data-id="${f.id}">Comprar</button>
+      `;
+      listaFurnisDiv.appendChild(div);
+    });
+
+    // Eventos para comprar
+    listaFurnisDiv.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        comprarFurni(id);
+      });
+    });
+  }
+
+  function comprarFurni(id) {
+    // Aquí puedes agregar lógica para descontar kekos del usuario, etc.
+    // Por ahora solo guardamos el furni comprado
+
+    let comprados = JSON.parse(localStorage.getItem(`furnis_${usuarioActual.usuario}`)) || [];
+
+    if (comprados.includes(id)) {
+      mensajeCompra.textContent = "Ya tienes este furni.";
+      return;
+    }
+
+    comprados.push(id);
+    localStorage.setItem(`furnis_${usuarioActual.usuario}`, JSON.stringify(comprados));
+    mensajeCompra.textContent = "Furni comprado con éxito.";
+  }
+
+  volverBtn.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+
+  cargarTienda();
+</script>
+
+</body>
+</html>

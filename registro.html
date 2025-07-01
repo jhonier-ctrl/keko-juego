@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro Kekocity</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0a1a2f;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #122b47;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #000;
+      max-width: 400px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #50b9ff;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #50b9ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #379fd9;
+    }
+    .mensaje {
+      margin-top: 15px;
+      text-align: center;
+      color: #0f0;
+    }
+    a {
+      color: #50b9ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registro Kekocity</h2>
+    <form id="registroForm">
+      <label for="usuario">Nombre de usuario</label>
+      <input type="text" id="usuario" required />
+
+      <label for="contrasena">Contraseña</label>
+      <input type="password" id="contrasena" required />
+
+      <button type="submit">Registrarse</button>
+    </form>
+    <div class="mensaje" id="mensaje"></div>
+    <p style="text-align:center; margin-top:15px;">
+      ¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a>
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById("registroForm");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const usuario = document.getElementById("usuario").value.trim();
+      const contrasena = document.getElementById("contrasena").value;
+
+      if (!usuario || !contrasena) {
+        mensaje.style.color = "#f00";
+        mensaje.textContent = "Completa todos los campos.";
+        return;
+      }
+
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+      const existe = usuarios.find(u => u.usuario === usuario);
+      if (existe) {
+        mensaje.style.color = "#f00";
+        mensaje.textContent = "Ese nombre de usuario ya existe.";
+        return;
+      }
+
+      const esPrimerUsuario = usuarios.length === 0;
+      const nuevoUsuario = {
+        usuario,
+        contrasena,
+        rol: esPrimerUsuario ? "moderador" : "usuario"
+      };
+
+      usuarios.push(nuevoUsuario);
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      localStorage.setItem("usuarioActual", JSON.stringify(nuevoUsuario));
+
+      mensaje.style.color = "#0f0";
+      mensaje.innerHTML = `¡Registro exitoso! ${esPrimerUsuario ? "Eres el primer usuario y fuiste ascendido a moderador." : ""}<br><a href="login.html">Inicia sesión aquí</a>`;
+      form.reset();
+    });
+  </script>
+</body>
+</html>

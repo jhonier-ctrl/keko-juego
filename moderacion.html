@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panel de Moderación - Kekocity</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #0a1a2f;
+    color: white;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: #50b9ff;
+    text-align: center;
+  }
+  .usuarios-lista {
+    background-color: #122b47;
+    border-radius: 8px;
+    padding: 15px;
+    max-width: 600px;
+    margin: 20px auto;
+  }
+  .usuario-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #379fd9;
+  }
+  button {
+    background-color: #50b9ff;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #379fd9;
+  }
+  #alertaForm {
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #122b47;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  #alertaInput {
+    width: 80%;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+  }
+  #enviarAlertaBtn {
+    padding: 9px 12px;
+    margin-left: 10px;
+  }
+  #mensaje {
+    text-align: center;
+    margin-top: 10px;
+  }
+  #logoutBtn {
+    background-color: #ff5c5c;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+</head>
+<body>
+
+<h1>Panel de Moderación - Kekocity</h1>
+
+<div class="usuarios-lista" id="usuariosLista">
+  <!-- Lista de usuarios se carga aquí -->
+</div>
+
+<form id="alertaForm">
+  <input type="text" id="alertaInput" placeholder="Escribe alerta global..." required />
+  <button type="submit" id="enviarAlertaBtn">Enviar alerta</button>
+</form>
+
+<div id="mensaje"></div>
+
+<button id="logoutBtn">Cerrar sesión</button>
+
+<script>
+  // Verificar que usuario actual es moderador
+  const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+
+  if (!usuarioActual) {
+    alert("No has iniciado sesión.");
+    window.location.href = "login.html";
+  } else if (usuarioActual.rol !== "moderador") {
+    alert("No tienes permisos para acceder a esta página.");
+    window.location.href = "index.html";
+  }
+
+  const usuariosLista = document.getElementById("usuariosLista");
+  const alertaForm = document.getElementById("alertaForm");
+  const alertaInput = document.getElementById("alertaInput");
+  const mensaje = document.getElementById("mensaje");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // Cargar usuarios y mostrarlos
+  function cargarUsuarios() {
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuariosLista.innerHTML = "";
+
+    if (usuarios.length === 0) {
+      usuariosLista.innerHTML = "<p>No hay usuarios registrados.</p>";
+      return;
+    }
+
+    usuarios.forEach((u, i) => {
+      const div = document.createElement("div");
+      div.classList.add("usuario-item");
+      div.innerHTML = `
+        <span>${u.usuario} - <em>${u.rol}</em></span>
+        <button data-index="${i}">Banear</button>
+      `;
+      usuariosLista.appendChild(div);
+    });
+
+    // Agregar evento a botones de banear
+    usuariosLista.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const index = btn.getAttribute("data-index");
+        banearUsuario(index);
+      });
+    });
+  }
+
+  // Función para banear usuario con confirmación extra para moderadores
+  function banearUsuario(index) {
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const usuarioABanear = usuarios[index];
+
+    if (usuarioABanear.usuario === usuarioActual.usuario) {
+      alert("No puedes banearte a ti mismo.");
+      return;
+    }
+
+    if (usuarioABanear.rol === "moderador") {
+      const confirmar = confirm(`¡Atención! Estás a punto de banear a un MODERADOR: ${usuarioABanear.usuario}. ¿Seguro que quieres continuar?`);
+      if (!confirmar) return;
+    } else {
+      const confirmar = confirm(`¿Seguro que quieres banear a ${usuarioABanear.usuario}?`);
+      if (!confirmar) return;
+    }
+
+    usuarios.splice(index, 1);
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    const usuarioSesion = JSON.parse(localStorage.getItem("usuarioActual"));
+    if (usuarioSesion && usuarioSesion.usuario === usuarioABanear.usuario) {
+      localStorage.removeItem("usuarioActual");
+      window.location.href = "login.html";
+    }
+
+    cargarUsuarios();
+    mensaje.textContent = `Usuario ${usuarioABanear.usuario} baneado.`;
+    setTimeout(() => { mensaje.textContent = ""; }, 3000);
+  }
+
+  alertaForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const textoAlerta = alertaInput.value.trim();
+    if (!textoAlerta) return;
+
+    localStorage.setItem("alertaGlobal", textoAlerta);
+
+    mensaje.textContent = "Alerta enviada a todos los usuarios.";
+    alertaInput.value = "";
+
+    setTimeout(() => { mensaje.textContent = ""; }, 3000);
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("usuarioActual");
+    window.location.href = "login.html";
+  });
+
+  cargarUsuarios();
+</script>
+
+</body>
+</html>

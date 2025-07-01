@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inicio de sesión Kekocity</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0a1a2f;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #122b47;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #000;
+      max-width: 400px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #50b9ff;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #50b9ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #379fd9;
+    }
+    .mensaje {
+      margin-top: 15px;
+      text-align: center;
+      color: #ff6b6b;
+    }
+    a {
+      color: #50b9ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Iniciar sesión</h2>
+    <form id="loginForm">
+      <label for="usuario">Nombre de usuario</label>
+      <input type="text" id="usuario" required />
+      <label for="contrasena">Contraseña</label>
+      <input type="password" id="contrasena" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <div class="mensaje" id="mensaje"></div>
+    <p style="text-align:center; margin-top:15px;">
+      ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const usuario = document.getElementById("usuario").value.trim();
+      const contrasena = document.getElementById("contrasena").value;
+
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const usuarioEncontrado = usuarios.find(u => u.usuario === usuario);
+
+      if (!usuarioEncontrado) {
+        mensaje.textContent = "Usuario no encontrado.";
+        return;
+      }
+
+      if (usuarioEncontrado.contrasena !== contrasena) {
+        mensaje.textContent = "Contraseña incorrecta.";
+        return;
+      }
+
+      // Guardamos el usuario actual para usarlo en el juego
+      localStorage.setItem("usuarioActual", JSON.stringify(usuarioEncontrado));
+
+      // Redirigimos a la página principal (cambia index.html por la que uses)
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
