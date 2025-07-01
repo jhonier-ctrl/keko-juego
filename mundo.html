@@ -1,238 +1,213 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kekocity - Mundo con Furnis Reales</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #0a1a2f;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
-    .header {
-      background-color: #122b47;
-      padding: 10px 20px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-    button {
-      background-color: #50b9ff;
-      border: none;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-    button:hover {
-      background-color: #379fd9;
-    }
-    #chat {
-      background-color: #122b47;
-      border-radius: 8px;
-      padding: 10px;
-      height: 200px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-    #chat p {
-      margin: 5px 0;
-    }
-    #mensajeInput {
-      width: calc(100% - 90px);
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-    }
-    #enviarBtn {
-      width: 70px;
-      margin-left: 10px;
-    }
-    #alertaGlobal {
-      background-color: #ff4444;
-      color: white;
-      padding: 10px;
-      border-radius: 6px;
-      max-width: 600px;
-      margin: 10px auto;
-      text-align: center;
-      font-weight: bold;
-      display: none;
-    }
-    #cuarto {
-      width: 600px;
-      height: 400px;
-      background-color: #1a2a4a;
-      border: 3px solid #50b9ff;
-      border-radius: 12px;
-      margin: 20px auto;
-      position: relative;
-      overflow: hidden;
-    }
-    .furni {
-      position: absolute;
-      width: 60px;
-      height: auto;
-      cursor: grab;
-      user-select: none;
-      transition: all 0.1s ease;
-      image-rendering: pixelated;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kekocity - Mundo con Furnis Reales</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #0a1a2f;
+    color: white;
+    margin: 0;
+    padding: 20px;
+  }
+  .header {
+    background-color: #122b47;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  button {
+    background-color: #50b9ff;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  button:hover {
+    background-color: #379fd9;
+  }
+  #chat {
+    background-color: #122b47;
+    border-radius: 8px;
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  #chat p {
+    margin: 5px 0;
+  }
+  #mensajeInput {
+    width: calc(100% - 90px);
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+  }
+  #enviarBtn {
+    width: 70px;
+    margin-left: 10px;
+  }
+  #alertaGlobal {
+    background-color: #ff4444;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    max-width: 600px;
+    margin: 10px auto;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+  }
+  #cuarto {
+    width: 600px;
+    height: 400px;
+    background-color: #1a2a4a;
+    border: 3px solid #50b9ff;
+    border-radius: 12px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .furni {
+    position: absolute;
+    width: 60px;
+    height: auto;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.1s ease;
+    image-rendering: pixelated;
+  }
+</style>
 </head>
 <body>
+<div class="header">
+  <h1>Bienvenido a Kekocity</h1>
+  <p id="bienvenida"></p>
+  <button id="logoutBtn">Cerrar sesión</button>
+  <button onclick="window.location.href='tienda.html'">Ir a la Tienda</button>
+</div>
+<div id="alertaGlobal"></div>
+<div id="chat"></div>
+<div>
+  <input type="text" id="mensajeInput" placeholder="Escribe tu mensaje aquí" autocomplete="off" />
+  <button id="enviarBtn">Enviar</button>
+</div>
+<h2 style="text-align:center;">Tu cuarto</h2>
+<div id="cuarto">
+  <img id="player" src="player.png" alt="Personaje" style="position:absolute; width:64px; height:128px; top: 150px; left: 150px; user-select:none; image-rendering: pixelated;">
+</div>
+<script>
+const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+if (!usuarioActual) {
+  window.location.href = "index.html";
+} else {
+  document.getElementById("bienvenida").textContent = `Hola, ${usuarioActual.nombre}. Tu rol es: ${usuarioActual.rango}.`;
+}
+const chatDiv = document.getElementById("chat");
+const mensajeInput = document.getElementById("mensajeInput");
+const enviarBtn = document.getElementById("enviarBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const alertaDiv = document.getElementById("alertaGlobal");
 
-  <div class="header">
-    <h1>Bienvenido a Kekocity</h1>
-    <p id="bienvenida"></p>
-    <button id="logoutBtn">Cerrar sesión</button>
-    <button onclick="window.location.href='tienda.html'">Ir a la Tienda</button>
-  </div>
+function mostrarAlertaGlobal() {
+  const alerta = localStorage.getItem("alertaGlobal");
+  if (alerta && alerta.trim() !== "") {
+    alertaDiv.textContent = alerta;
+    alertaDiv.style.display = "block";
+  } else {
+    alertaDiv.style.display = "none";
+  }
+}
 
-  <div id="alertaGlobal"></div>
+function cargarMensajes() {
+  let mensajes = JSON.parse(localStorage.getItem("mensajesChat")) || [];
+  chatDiv.innerHTML = "";
+  mensajes.forEach(m => {
+    const p = document.createElement("p");
+    p.innerHTML = `<strong>${m.usuario}:</strong> ${m.texto}`;
+    chatDiv.appendChild(p);
+  });
+  chatDiv.scrollTop = chatDiv.scrollHeight;
+}
 
-  <div id="chat"></div>
+function enviarMensaje() {
+  const texto = mensajeInput.value.trim();
+  if (texto === "") return;
+  let mensajes = JSON.parse(localStorage.getItem("mensajesChat")) || [];
+  mensajes.push({ usuario: usuarioActual.nombre, texto });
+  localStorage.setItem("mensajesChat", JSON.stringify(mensajes));
+  mensajeInput.value = "";
+  cargarMensajes();
+}
 
-  <div>
-    <input type="text" id="mensajeInput" placeholder="Escribe tu mensaje aquí" autocomplete="off" />
-    <button id="enviarBtn">Enviar</button>
-  </div>
+enviarBtn.addEventListener("click", enviarMensaje);
+mensajeInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") enviarMensaje();
+});
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("usuarioActual");
+  window.location.href = "index.html";
+});
 
-  <h2 style="text-align:center;">Tu cuarto</h2>
-  <div id="cuarto"></div>
+function mostrarFurnisComprados() {
+  const cuarto = document.getElementById("cuarto");
+  const comprados = JSON.parse(localStorage.getItem(`furnis_${usuarioActual.nombre}`)) || [];
+  comprados.forEach(id => {
+    const furni = document.createElement("img");
+    furni.classList.add("furni");
+    furni.id = id;
+    furni.src = id === "furni1" ? "https://kekocity.es/fly/i/fursv5/19435/4015901.png" : id === "furni2" ? "https://kekocity.es/fly/i/fursv5/19435/4015902.png" : "";
+    cuarto.appendChild(furni);
+  });
+}
+mostrarAlertaGlobal();
+cargarMensajes();
+mostrarFurnisComprados();
 
-  <script>
-    // Verificar si hay sesión activa, si no, redirigir a login
-    const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
-    if (!usuarioActual) {
-      window.location.href = "index.html";
-    } else {
-      document.getElementById("bienvenida").textContent = `Hola, ${usuarioActual.nombre}. Tu rol es: ${usuarioActual.rango}.`;
-    }
+// Movimiento del personaje
+const player = document.getElementById('player');
+let posX = 150;
+let posY = 150;
+const speed = 10;
+let walking = false;
 
-    const chatDiv = document.getElementById("chat");
-    const mensajeInput = document.getElementById("mensajeInput");
-    const enviarBtn = document.getElementById("enviarBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const alertaDiv = document.getElementById("alertaGlobal");
+function animateWalk() {
+  if (!walking) return;
+  player.style.transform = `scale(1.05)`;
+  setTimeout(() => {
+    player.style.transform = `scale(1)`;
+  }, 200);
+}
 
-    function mostrarAlertaGlobal() {
-      const alerta = localStorage.getItem("alertaGlobal");
-      if (alerta && alerta.trim() !== "") {
-        alertaDiv.textContent = alerta;
-        alertaDiv.style.display = "block";
-      } else {
-        alertaDiv.style.display = "none";
-      }
-    }
-
-    function cargarMensajes() {
-      let mensajes = JSON.parse(localStorage.getItem("mensajesChat")) || [];
-      chatDiv.innerHTML = "";
-      mensajes.forEach(m => {
-        const p = document.createElement("p");
-        p.innerHTML = `<strong>${m.usuario}:</strong> ${m.texto}`;
-        chatDiv.appendChild(p);
-      });
-      chatDiv.scrollTop = chatDiv.scrollHeight;
-    }
-
-    function enviarMensaje() {
-      const texto = mensajeInput.value.trim();
-      if (texto === "") return;
-
-      let mensajes = JSON.parse(localStorage.getItem("mensajesChat")) || [];
-      mensajes.push({ usuario: usuarioActual.nombre, texto });
-      localStorage.setItem("mensajesChat", JSON.stringify(mensajes));
-
-      mensajeInput.value = "";
-      cargarMensajes();
-    }
-
-    enviarBtn.addEventListener("click", enviarMensaje);
-    mensajeInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") enviarMensaje();
-    });
-
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("usuarioActual");
-      window.location.href = "index.html";
-    });
-
-    function mostrarFurnisComprados() {
-      const cuarto = document.getElementById("cuarto");
-      cuarto.innerHTML = "";
-
-      const comprados = JSON.parse(localStorage.getItem(`furnis_${usuarioActual.nombre}`)) || [];
-
-      comprados.forEach(id => {
-        const furni = document.createElement("img");
-        furni.classList.add("furni");
-        furni.id = id;
-
-        // Asignar imagen real desde Kekocity
-        furni.src =
-          id === "furni1"
-            ? "https://kekocity.es/fly/i/fursv5/19435/4015901.png"
-            : id === "furni2"
-            ? "https://kekocity.es/fly/i/fursv5/19435/4015902.png"
-            : "https://kekocity.es/fly/i/fursv5/19435/4015903.png";
-
-        const pos = JSON.parse(localStorage.getItem(`pos_${id}_${usuarioActual.nombre}`));
-        furni.style.left = pos?.left || "10px";
-        furni.style.top = pos?.top || "10px";
-
-        let isDragging = false;
-        let offsetX, offsetY;
-
-        furni.addEventListener("mousedown", (e) => {
-          isDragging = true;
-          offsetX = e.clientX - furni.getBoundingClientRect().left;
-          offsetY = e.clientY - furni.getBoundingClientRect().top;
-          furni.style.cursor = "grabbing";
-        });
-
-        document.addEventListener("mouseup", () => {
-          if (isDragging) {
-            isDragging = false;
-            furni.style.cursor = "grab";
-            localStorage.setItem(`pos_${id}_${usuarioActual.nombre}`, JSON.stringify({
-              left: furni.style.left,
-              top: furni.style.top
-            }));
-          }
-        });
-
-        document.addEventListener("mousemove", (e) => {
-          if (!isDragging) return;
-          const rect = cuarto.getBoundingClientRect();
-          let x = e.clientX - rect.left - offsetX;
-          let y = e.clientY - rect.top - offsetY;
-
-          x = Math.max(0, Math.min(x, rect.width - furni.offsetWidth));
-          y = Math.max(0, Math.min(y, rect.height - furni.offsetHeight));
-
-          furni.style.left = x + "px";
-          furni.style.top = y + "px";
-        });
-
-        cuarto.appendChild(furni);
-      });
-    }
-
-    // Inicializar
-    cargarMensajes();
-    mostrarAlertaGlobal();
-    mostrarFurnisComprados();
-
-    window.addEventListener("storage", (e) => {
-      if (e.key === "mensajesChat") cargarMensajes();
-      if (e.key === "alertaGlobal") mostrarAlertaGlobal();
-    });
-  </script>
-
+window.addEventListener('keydown', (e) => {
+  walking = false;
+  switch(e.key) {
+    case 'ArrowUp':
+      posY = Math.max(0, posY - speed);
+      walking = true;
+      break;
+    case 'ArrowDown':
+      posY = Math.min(document.getElementById('cuarto').clientHeight - player.height, posY + speed);
+      walking = true;
+      break;
+    case 'ArrowLeft':
+      posX = Math.max(0, posX - speed);
+      walking = true;
+      break;
+    case 'ArrowRight':
+      posX = Math.min(document.getElementById('cuarto').clientWidth - player.width, posX + speed);
+      walking = true;
+      break;
+  }
+  player.style.top = posY + 'px';
+  player.style.left = posX + 'px';
+  if (walking) animateWalk();
+});
+</script>
 </body>
 </html>
