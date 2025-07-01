@@ -208,6 +208,42 @@ window.addEventListener('keydown', (e) => {
   player.style.left = posX + 'px';
   if (walking) animateWalk();
 });
+<script>
+  const player = document.getElementById('player');
+  let posX = 150, posY = 150, speed = 10;
+  let walking = false;
+
+  function animateWalk() {
+    if (!walking) return;
+    player.style.transform = 'scale(1.05)';
+    setTimeout(() => { player.style.transform = 'scale(1)'; }, 200);
+  }
+
+  window.addEventListener('keydown', (e) => {
+    walking = false;
+    const cuarto = document.getElementById('cuarto');
+    switch (e.key) {
+      case 'ArrowUp':
+        posY = Math.max(0, posY - speed);
+        walking = true;
+        break;
+      case 'ArrowDown':
+        posY = Math.min(cuarto.clientHeight - player.height, posY + speed);
+        walking = true;
+        break;
+      case 'ArrowLeft':
+        posX = Math.max(0, posX - speed);
+        walking = true;
+        break;
+      case 'ArrowRight':
+        posX = Math.min(cuarto.clientWidth - player.width, posX + speed);
+        walking = true;
+        break;
+    }
+    player.style.top = posY + 'px';
+    player.style.left = posX + 'px';
+    if (walking) animateWalk();
+  });
 </script>
 </body>
 </html>
